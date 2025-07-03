@@ -1,12 +1,16 @@
-<?php
-$currency = $_GET['currency'] ?? 'mad';
-$url = "https://freegoldprice.org/api/xau?currency=" . $currency;
+// api/gold-proxy.js
 
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$response = curl_exec($ch);
-curl_close($ch);
+import fetch from 'node-fetch';
 
-header("Content-Type: application/json");
-echo $response;
-?>
+export default async function handler(req, res) {
+  const currency = req.query.currency || 'mad';
+  const url = `https://freegoldprice.org/api/xau?currency=${currency}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'تعذر تحميل الأسعار' });
+  }
+}
